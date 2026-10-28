@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>통합시 재생에너지 활용 사이트</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1d2430; --sub:#5b6575; --line:#e3e6eb;
+  --accent:#0f7b6c; --accent2:#e8a33d; --gj:#3b6fd8; --warn:#b8452f;
+  --c0:#eef4f1; --c1:#cfe6dd; --c2:#9fd0bd; --c3:#5fb39a; --c4:#2f8f78; --c5:#145f50;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;line-height:1.5}
+header{background:linear-gradient(120deg,#0b3d36,#145f50 55%,#1f7a66);color:#fff;padding:28px 24px 22px}
+header .badge{display:inline-block;background:var(--accent2);color:#2b1a00;font-weight:700;font-size:12px;padding:3px 9px;border-radius:99px;margin-bottom:10px}
+header h1{margin:0 0 6px;font-size:26px;letter-spacing:-.5px}
+header p{margin:0;opacity:.88;font-size:14px}
+main{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
+section.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+section.box h2{font-size:15px;margin:0 0 10px;color:var(--sub);font-weight:600}
+.uses{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.use{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;background:#fbfcfd}
+.use b{display:block;font-size:14px;margin-bottom:2px}
+.use .arrow{color:var(--accent);font-weight:700;font-size:12px}
+.use.off{opacity:.45}
+.tabs{display:flex;gap:6px;margin:6px 0 12px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--card);padding:9px 16px;border-radius:99px;cursor:pointer;font-size:14px;font-weight:600;color:var(--sub)}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card h3{margin:0 0 4px;font-size:16px}
+.hint{margin:0 0 12px;color:var(--sub);font-size:12.5px}
+svg.map{width:100%;height:auto;display:block}
+svg.map path.sgg{stroke:#fff;stroke-width:.8;cursor:pointer;transition:opacity .12s}
+svg.map path.sgg:hover{opacity:.8}
+svg.map path.sel{stroke:var(--warn);stroke-width:2.2}
+svg.map path.nofile{stroke:#8a4b12;stroke-dasharray:3 2;stroke-width:1.2}
+svg.map text{font-size:9.5px;font-weight:700;pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:2.5px;fill:#1d2430}
+svg.map .inset-frame{fill:#fff;stroke:var(--gj);stroke-dasharray:4 3}
+svg.map .inset-title{font-size:10px;fill:var(--gj);stroke:none}
+.legend{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11.5px;color:var(--sub);flex-wrap:wrap}
+.legend i{width:22px;height:10px;border-radius:3px;display:inline-block}
+.legend .dash{width:22px;height:10px;border:1.5px dashed #8a4b12;border-radius:3px;display:inline-block}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#f3f7f6;border-radius:10px;padding:10px 12px}
+.kpi .v{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.kpi .l{font-size:12px;color:var(--sub)}
+.bars .row{display:grid;grid-template-columns:70px 1fr 70px;align-items:center;gap:8px;font-size:12.5px;margin:4px 0}
+.bars .b{height:14px;border-radius:4px;background:var(--accent)}
+.bars .b.gj{background:var(--gj)}
+.bars .n{text-align:right;color:var(--sub)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--sub);font-weight:600}
+.pill{font-size:11px;padding:2px 7px;border-radius:99px;background:#fdecea;color:var(--warn);font-weight:700}
+.search{display:flex;gap:6px;margin-bottom:12px}
+.search input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--line);font-size:14px}
+.search button{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+.big{font-size:40px;font-weight:800;color:var(--accent);letter-spacing:-1px}
+.spark{display:flex;align-items:flex-end;gap:3px;height:80px;margin-top:6px}
+.spark div{flex:1;background:var(--accent2);border-radius:3px 3px 0 0;min-height:1px}
+.spark-l{display:flex;justify-content:space-between;font-size:10.5px;color:var(--sub)}
+details.caveat{background:#fff8f0;border:1px solid #f0d9bd;border-radius:12px;padding:12px 16px;margin-top:16px}
+details.caveat summary{cursor:pointer;font-weight:700;color:#8a4b12}
+details.caveat li{font-size:13.5px;margin:5px 0}
+.slot{margin-top:16px;border:2px dashed var(--line);border-radius:14px;padding:16px 18px;background:#fafbfc}
+.slot h3{margin:0 0 4px;font-size:16px}
+.slot .todo{color:var(--sub);font-size:13px}
+.slot .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:10px}
+.slot .cards div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+.slot .cards .yr{display:block;font-weight:800;color:var(--accent);font-size:13px}
+.slot .cards a{color:var(--sub);font-size:11.5px}
+.slot .cmp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:10px;background:#fff}
+.slot .cmp>div{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--line)}
+.slot .cmp .h{font-weight:700;color:var(--sub);font-size:12px;background:#f3f5f7}
+.slot .cmp .gap{background:#fff8f0}
+.slot .cards .prop b{display:block;font-size:14px;margin-bottom:2px}
+.slot .cards .mine{border:2px solid var(--gj)}
+.copybtn{margin-top:12px;padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:12.5px;font-weight:600}
+footer{max-width:1180px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-size:12px}
+footer details{margin-top:6px}
+.panel{display:none}.panel.on{display:block}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.uses{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+<!-- 칸① 머리 -->
+<header>
+  <span class="badge">템플릿 · 강사 리허설판 (실제 데이터)</span>
+  <h1>통합 넉 달, 우리 시 재생에너지 — 데이터로 만든 활용 사이트</h1>
+  <p>공공데이터포털 파일 21개를 열 맞춰 합쳤습니다 · 받은 날 2026-10-23 · 데이터 기준 시점은 파일마다 다릅니다(아래 「믿기 전에」)</p>
+</header>
+
+<main>
+  <!-- 칸② 포털 AI가 말한 활용 방안 → 우리가 만든 것 -->
+  <section class="box">
+    <h2>포털 AI가 말한 활용 방안 넷 → 우리가 실제로 만든 것</h2>
+    <div class="uses">
+      <div class="use"><b>정책 수립·평가</b>「목표 설정에 핵심 자료로 활용될 수 있습니다」<br><span class="arrow">→ 정책 대시보드</span></div>
+      <div class="use"><b>기업 투자 유치</b>「공급망 설계·투자 시점 최적화」<br><span class="arrow">→ 투자 기회 지도</span></div>
+      <div class="use"><b>시민 참여</b>「현황을 쉽게 이해하고 견학을 기획」<br><span class="arrow">→ 우리 동네 발전소 찾기</span></div>
+      <div class="use off"><b>학술·교육</b>「대학·연구기관의 실증 데이터」<br><span class="arrow">→ (오늘은 다루지 않음)</span></div>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab on" data-mode="policy">정책 대시보드</button>
+    <button class="tab" data-mode="biz">투자 기회 지도</button>
+    <button class="tab" data-mode="citizen">우리 동네 발전소 찾기</button>
+  </div>
+
+  <div class="grid">
+    <!-- 칸③ 지도 -->
+    <div class="card">
+      <h3 id="mapTitle"></h3>
+      <p class="hint">시·군·구를 누르면 오른쪽에 자세히 · 오른쪽 위 네모 = 구 광주광역시 확대</p>
+      <svg class="map" id="map" viewBox="0 0 738 371" role="img" aria-label="통합시 시군구 지도"></svg>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <!-- 칸④ 쓰임 탭 셋 -->
+    <div class="card">
+      <div class="panel on" id="p-policy">
+        <h3>정책 대시보드</h3>
+        <p class="hint">차년도 예산 우선순위를 정할 때 보는 화면</p>
+        <div class="kpis">
+          <div class="kpi"><div class="v" id="k1"></div><div class="l">통합시 설비용량 (3MW 이하)</div></div>
+          <div class="kpi"><div class="v" id="k2"></div><div class="l">구 광주 : 구 전남</div></div>
+          <div class="kpi"><div class="v" id="k3"></div><div class="l">태양광 비중</div></div>
+        </div>
+        <div class="bars" id="bars"></div>
+        <p class="hint" style="margin-top:12px">허가 연도별 발전소 수 (허가일이 있는 것만)</p>
+        <div class="spark" id="spark"></div>
+        <div class="spark-l"><span id="y0"></span><span id="y1"></span></div>
+        <button class="copybtn" id="copySum">📋 이 페이지의 숫자를 글로 복사 (6교시에 ChatGPT에 붙여 넣기)</button>
+      </div>
+
+      <div class="panel" id="p-biz">
+        <h3>투자 기회 지도</h3>
+        <p class="hint">허가는 났는데 아직 사업을 시작하지 않은 용량 — 공동 투자 · 공급망 연계 후보</p>
+        <table>
+          <thead><tr><th>시·군·구</th><th>미개시 용량</th><th>건수</th><th></th></tr></thead>
+          <tbody id="bizRows"></tbody>
+        </table>
+        <p class="hint" style="margin-top:10px">상태가 글자로 적힌 것(미개시 · 인허가 · 준비중 · 공사진행)만 셌습니다. 날짜나 상태가 비어 있는 발전소는 미개시가 아니라 「모름」 — 신안은 673MW가 그렇습니다.</p>
+        <p class="hint">💡 오후에 이어질 질문: 재생에너지가 몰린 서남해안 — AI 데이터센터가 올 자리인가?</p>
+      </div>
+
+      <div class="panel" id="p-citizen">
+        <h3>우리 동네 발전소 찾기</h3>
+        <p class="hint">주민이 자기 동네를 넣어 보는 화면</p>
+        <div class="search"><input id="q" placeholder="시·군·구 이름 (예: 나주, 광산)"><button id="go">찾기</button></div>
+        <div id="citizenOut"><p class="hint">왼쪽 지도를 눌러도 됩니다.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 칸⑤ 이 숫자를 믿기 전에 -->
+  <details class="caveat">
+    <summary>⚠ 이 숫자를 믿기 전에 — 데이터 한계</summary>
+    <ul>
+      <li><b>이름은 통합시, 파일은 옛 이름</b> — 포털에는 「전남광주통합특별시_…」로 걸려 있는데, 받은 파일 21개 가운데 17개의 이름이 「전라남도_…」 「광주광역시_…」다.</li>
+      <li><b>기준 시점이 제각각이다</b> — 장흥 2021-01 · 광주 2023-09 · 신안 2026-02 · 전남 도 2026-06. 같은 날의 우리 시가 아니다.</li>
+      <li><b>용량 열 이름만 13가지</b> — 「설비용량(KW)」 「허가용량(킬로와트)」 「용량 1메가와트 미만」… 하나씩 맞춰서 합쳤다.</li>
+      <li><b>같은 발전소가 두 번 들어 있었다</b> — 시·군 파일과 전남 도 파일에 겹친 52건(100.3MW, 대부분 해남)을 뺐다.</li>
+      <li><b>3MW가 넘는 큰 발전소는 없다</b> — 이 파일들은 시·군(1MW 미만)과 도(1~3MW)가 허가한 것뿐이다. 산업통상자원부가 허가하는 대형 태양광·해상풍력은 빠져 있다.</li>
+      <li><b>고흥 · 진도 · 화순은 시·군 파일이 없다</b>(점선) — 도 파일의 1MW 이상만 들어가 실제보다 작게 보인다. 광양은 동별 합계뿐이라 발전소 수를 모르고, 완도는 100kW 미만만 담았다.</li>
+      <li><b>문 닫은 발전소가 섞여 있다</b> — 폐업 · 인허가취소 · 허가취소 · 폐기 · 이관 1,297건(292MW)을 뺐다(무안 폐업 837건 · 인허가취소 250건 · 장흥 허가취소 146건 · 보성 폐기 61건). 보성은 「가동중단」이 954건(194MW) — 설비에는 남겼다.</li>
+      <li><b>나주 파일은 한 파일 안에서 두 열이 어긋난다</b> — 「상태구분」은 5,014건 전부 「정상」인데 「사업개시일」에는 「사업미개시」가 2,711건이다. 위도와 경도도 서로 바뀌어 있다.</li>
+      <li><b>광양 파일 맨 아래에 「총합계」 줄이 있다</b> — 그냥 더하면 광양이 두 배가 된다.</li>
+      <li><b>전남 도 파일에 광주 주소 발전소가 4건</b> 섞여 있고, 「영광,백수읍」처럼 시·군을 뺀 주소가 12건, 발전소 주소 칸에 서울·경기 주소(사업자 주소로 보인다)가 4건 있다.</li>
+      <li><b>포털 AI의 요약도 틀렸다</b> — 광주 쪽 파일을 「전남광주통합특별시의 보급현황」이라고 소개한다. 이름만 보고 말한 것이다.</li>
+    </ul>
+  </details>
+
+  <!-- 칸⑥ 5교시 — 세계 흐름 타임라인 (여기에 카드를 넣는다) -->
+  <section class="slot" id="slot-timeline">
+    <h3>⏳ 5교시 — 세계 흐름 타임라인</h3>
+    <p class="todo">재생에너지와 맞물린 세계 흐름(RE100 · AI 데이터센터 전력 수요 · 해상풍력 · 전력망…)을 ChatGPT 웹 검색으로 모아 카드로 넣습니다. 카드마다 연도 · 한 줄 · 출처.</p>
+    <div class="cards"></div>
+  </section>
+
+  <!-- 칸⑦ 6교시 — 세계 vs 우리 시 -->
+  <section class="slot" id="slot-compare">
+    <h3>⏳ 6교시 — 세계 vs 우리 시</h3>
+    <p class="todo">위 지도·탭의 숫자와 타임라인을 나란히 놓고 간극 셋을 찾습니다. 세계 · 우리 시 · 간극 순으로 나란히 — 숫자는 정책 대시보드의 「숫자를 글로 복사」 단추로 넘깁니다.</p>
+    <div class="cards"></div>
+  </section>
+
+  <!-- 칸⑧ 7교시 — 제안 카드 · 우리 부서라면 -->
+  <section class="slot" id="slot-proposal">
+    <h3>⏳ 7교시 — 제안 카드 · 우리 부서라면</h3>
+    <p class="todo">간극마다 제안 하나 + 「우리 부서라면」 한 칸.</p>
+    <div class="cards"></div>
+  </section>
+</main>
+
+<footer>
+  만든 사람: 최상훈 · choihunontop@gmail.com
+  <details><summary>출처</summary>
+    <p>공공데이터포털(data.go.kr) 파일데이터: 15054767 · 15029803 · 15043342 · 15034460 · 15033936 · 15048406 · 15039430 · 15113476 · 15034054 · 15113280 · 15034059 · 15113253 · 15039459 · 15029937 · 15113293 · 15157445 · 15029847 · 15029908 · 15029836 · 15030047 · 15033909</p>
+    <p>시·군·구 경계: southkorea/southkorea-maps (통계청 2013 시군구 경계 단순화판)</p>
+  </details>
+</footer>
+
+<script id="data" type="application/json">{"agg":{"동구":{"side":"gj","mw":3.5,"n":29,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":0.0,"do":0.0},"서구":{"side":"gj","mw":21.5,"n":179,"idle_mw":4.1,"idle_n":15,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":0.0,"do":5.8},"남구":{"side":"gj","mw":11.0,"n":67,"idle_mw":1.0,"idle_n":9,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":0.0,"do":0.0},"북구":{"side":"gj","mw":47.9,"n":380,"idle_mw":12.9,"idle_n":39,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":0.0,"do":0.0},"광산구":{"side":"gj","mw":255.1,"n":1272,"idle_mw":0.0,"idle_n":0,"unknown_mw":60.6,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":0.0,"do":6.0},"목포시":{"side":"jn","mw":88.7,"n":491,"idle_mw":19.1,"idle_n":97,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":86.6,"do":2.1},"여수시":{"side":"jn","mw":187.7,"n":854,"idle_mw":0.0,"idle_n":0,"unknown_mw":83.2,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":179.0,"do":8.7},"순천시":{"side":"jn","mw":134.6,"n":1093,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":92.3,"do":42.2},"나주시":{"side":"jn","mw":935.8,"n":5019,"idle_mw":510.3,"idle_n":2710,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":923.3,"do":12.4},"광양시":{"side":"jn","mw":194.1,"n":null,"idle_mw":0.0,"idle_n":0,"unknown_mw":123.5,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":123.5,"do":70.6},"담양군":{"side":"jn","mw":107.1,"n":866,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":99.0,"do":8.1},"곡성군":{"side":"jn","mw":103.0,"n":513,"idle_mw":0.0,"idle_n":0,"unknown_mw":62.3,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":101.0,"do":2.0},"구례군":{"side":"jn","mw":13.8,"n":43,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":5.7,"do":8.0},"고흥군":{"side":"jn","mw":35.0,"n":21,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":0.0,"do":35.0},"보성군":{"side":"jn","mw":361.8,"n":1511,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":193.9,"gone_mw":29.2,"gone_n":61,"has":true,"small":347.6,"do":14.2},"화순군":{"side":"jn","mw":6.0,"n":4,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":0.0,"do":6.0},"장흥군":{"side":"jn","mw":230.8,"n":693,"idle_mw":188.9,"idle_n":512,"unknown_mw":1.1,"halt_mw":0.0,"gone_mw":24.2,"gone_n":146,"has":true,"small":219.4,"do":11.4},"강진군":{"side":"jn","mw":218.0,"n":1091,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":202.6,"do":15.4},"해남군":{"side":"jn","mw":667.0,"n":1887,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":579.3,"do":87.7},"영암군":{"side":"jn","mw":168.3,"n":1566,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":132.1,"do":36.2},"무안군":{"side":"jn","mw":399.0,"n":1923,"idle_mw":178.4,"idle_n":743,"unknown_mw":1.1,"halt_mw":0.0,"gone_mw":238.3,"gone_n":1090,"has":true,"small":360.8,"do":38.3},"함평군":{"side":"jn","mw":56.9,"n":594,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":44.4,"do":12.5},"영광군":{"side":"jn","mw":518.7,"n":813,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":200.5,"do":318.2},"장성군":{"side":"jn","mw":130.1,"n":750,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":108.2,"do":21.9},"완도군":{"side":"jn","mw":67.5,"n":592,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":50.0,"do":17.5},"진도군":{"side":"jn","mw":14.1,"n":9,"idle_mw":0.0,"idle_n":0,"unknown_mw":0.0,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":0.0,"do":14.1},"신안군":{"side":"jn","mw":1049.4,"n":2165,"idle_mw":0.0,"idle_n":0,"unknown_mw":673.3,"halt_mw":0.0,"gone_mw":0.0,"gone_n":0,"has":true,"small":852.7,"do":196.7}},"bysrc":{"태양광":5985.2,"풍력":17.0,"소수력":6.9,"바이오에너지":4.0,"실증사업(ESS)":3.0,"기력발전":2.7,"매립가스(LFG)":2.1,"연료전지":1.8,"바이오가스":1.0,"가스터빈(수전해수소가스엔진발전)":0.9,"가스엔진발전기":0.7,"화력":0.3,"수력":0.3,"조류":0.2,"지열":0.1},"years":{"2006":16,"2007":115,"2008":80,"2009":123,"2010":33,"2011":92,"2012":195,"2013":571,"2014":1666,"2015":782,"2016":710,"2017":3129,"2018":4894,"2019":1478,"2020":1382,"2021":1247,"2022":1862,"2023":2133,"2024":2971,"2025":434},"w":560,"h":371,"shapes":{"신안군":{"d":"M0,348.4L3.5,349.1L5.5,353.5L10.6,359.7L4.4,360.1L0,355.6L0,348.4ZM157,214.8L158.1,221.3L154.1,223.2L149.8,218.7L157,214.8ZM200.8,213.5L203.8,218.9L208,220.9L209.6,225L203.2,237.1L196.6,240.1L196.2,231L200,232.1L203.3,227.8L196.8,215.1L200.8,213.5ZM196.7,207.5L197.3,212.1L194.4,218.6L198.3,221.7L200.1,226.5L198,230.5L190.6,231.4L188.7,214.5L196.7,207.5ZM217.1,203.8L224.7,206.7L226,214.3L220.1,218.3L213.1,217.3L209,210.7L210.9,206.2L217.1,203.8ZM203.9,201.2L204.5,205.1L203,211.5L199.8,208.6L200,201.1L203.9,201.2ZM62,197.9L56.9,205.9L54.8,203.6L62,197.9ZM227,195.8L227.2,201.5L224,204.1L219.9,202.3L219.6,198.9L227,195.8ZM71.7,197.2L72.2,206.6L69.2,211.4L61.5,215.3L59.8,211.6L62.6,203.1L65.7,197.7L71.7,197.2ZM24.2,194.4L22.4,202.2L16.8,204.3L21.9,196L24.2,194.4ZM180.2,189.8L181.8,191.9L189.7,194.7L188.4,201.2L184.2,202.8L179.7,208.3L169.3,203L169.2,194.7L174.7,193.9L180.2,189.8ZM203.4,177.5L206.6,179.4L212.2,178.3L215.2,182.6L220.3,182.6L226.6,189.3L227.1,192.4L222.3,197.1L216.7,200.7L211.4,201.6L209.1,198.3L201.9,195.3L200.6,193L201.7,185.5L200.7,179.2L203.4,177.5ZM186.1,171L186.4,182.2L182,184.1L174.6,184.1L176.6,188.7L174.8,191.9L169.9,193.6L164.9,190.7L163.7,180.9L167.9,178.1L173.6,178.1L179.9,174.3L181.3,171.4L186.1,171ZM221.8,171.4L222.8,181.7L214.7,181.6L212.1,177.3L207.2,177.8L207.3,174.1L214.1,172.3L218.9,166.4L221.8,171.4ZM210.3,151.3L215.1,153.3L217.8,160.8L210.2,165.7L211.5,171.5L207.4,173L205.8,169.4L198.7,159.8L203.6,157.3L207.9,159.4L210.3,151.3ZM247.8,141.6L250.9,144.8L256,144.8L253.8,149.6L253.6,156.8L260.2,156.1L263.3,160.3L260.4,168.5L255.1,167.5L255.6,160.1L241.1,157.3L244.7,155.2L249,148.7L244.5,144.5L247.8,141.6ZM234.1,137.6L239.2,139.4L235,144.8L231.9,141.1L234.1,137.6ZM199.6,138.2L205.6,141.3L208.1,146.8L204.3,156.2L197,158.8L186.1,155.9L184.5,152.8L189.5,143.7L193.1,144.7L198.7,142L199.6,138.2ZM230.9,125.4L234.2,127L230.5,137.9L226.8,143.4L225.4,135.5L228.1,127.6L230.9,125.4ZM238.1,120.3L240.6,120.6L242.5,128L238,127.1L238.1,120.3ZM214.2,115.2L218.5,115.4L222.1,118.3L225.4,125.4L222.7,135.6L219.3,137.6L212.1,134.3L214.6,130.2L214.1,121.7L210.6,123.1L206.9,121.7L214.2,115.2ZM217,107.4L221.5,107.9L228.1,112.3L227.1,115.8L217.3,113.5L214.1,109.1L217,107.4ZM237.7,97.6L237.4,103.1L240.7,108.5L243.2,112.6L239.4,118.8L233.4,116.1L235.2,110.9L232.6,107.5L224.9,107.5L219.9,105.2L221.1,96L226,93.7L229.9,96.1L237.7,97.6ZM220.1,86L216.6,87.5L213.1,92.8L211.6,97.8L211.1,106.6L205.4,109L196.6,106.7L195.2,100.6L196.7,96.3L204.2,94L211,86.2L220.1,86Z","cx":211,"cy":188,"gj":false},"진도군":{"d":"M195,292.9L198.1,296.5L203.2,295.6L206.2,303.3L192.4,301.7L191,296.9L195,292.9ZM198.8,248.3L201.5,252.1L195.1,258.3L194.7,252.3L198.8,248.3ZM238.4,225.1L249.3,229.6L250,234.4L256.3,235.9L265.5,246.3L263.3,256L260.5,258.5L262,261.8L256.2,268.6L251.5,271.2L247,270.3L245.4,273.9L241.4,273.2L240.8,277.9L236.9,277.9L228.2,283L222.4,284.4L214.4,282.7L214.4,279L210.3,277.3L205,267.9L207.7,262.2L216.6,253.5L222.2,251.3L223.4,247L227.5,245.5L233.2,238.6L239.3,238.2L240.5,235.4L236.4,230.1L238.4,225.1Z","cx":237,"cy":257,"gj":false},"완도군":{"d":"M299.9,327.9L302.7,330.2L307.2,330.2L305.7,336.7L299.6,341.1L294.8,342.6L290.7,338.5L292.9,330.3L299.9,327.9ZM323,324L327.3,326.4L324.5,332.1L327,338L323.4,345L317.5,340.6L316,336.4L320.2,330.7L317.3,327.8L320.7,322.6L323,324ZM370.6,318.7L377.4,329.1L375.4,334.2L368.8,335L361.3,329.2L366.5,320.1L370.6,318.7ZM303.8,314.1L309.6,315.9L315.6,322L312.4,323.7L313.8,327.6L307.7,329.7L302.2,328L299.6,325.5L303.2,318L303.8,314.1ZM389.9,287.5L395.9,289.6L393.5,294.2L387,297.4L383.9,294.5L384.1,290.3L389.9,287.5ZM359.8,284.3L365.9,284.9L371.7,289.6L368.9,295L365.5,293.8L361,298.1L358.1,291.7L352.2,289.2L355.4,285.5L359.8,284.3ZM400,278.6L404.1,282.4L411.6,283L409.9,288.5L403.1,290.4L394.2,283L395,278.5L400,278.6ZM327.8,271.9L331.3,272.9L337.6,278.6L337,282L341,292.2L345.5,294.5L343.3,299.6L337.6,300.9L334.6,298.4L329.8,299.5L326.3,294L320.5,289.3L318.4,277L320.3,274.3L327.8,271.9ZM381.4,269.4L382.7,272.1L379.2,279.9L375.9,283.7L364.7,279.4L366.4,273.9L373.1,271.9L378.6,274.9L381.4,269.4ZM358.8,262L365.3,275.1L359,276.7L346.4,277.2L342.4,275.9L344.1,271L349.2,264.2L351.9,264.6L358.8,262ZM402.7,258.2L406.4,259.6L408.4,265.2L406.6,271.5L400.3,266.6L399.5,260.1L402.7,258.2Z","cx":332,"cy":286,"gj":false},"장성군":{"d":"M365.8,6.3L373.2,11.4L372.6,15.9L376.3,21.2L375.8,25.1L369.5,30.4L367.3,36.1L369.7,40.3L364.9,41.1L363.9,49.3L368,58.9L359.1,64.5L352.8,67.1L342.4,63.2L344.2,58.2L338.5,58.8L335.1,65.1L334.7,68.8L328.3,68L326.4,73.4L321.3,73.7L319.2,70L310.7,62.9L308.7,63.8L307.3,57.1L312.1,54.2L314.1,48.4L319.6,41.8L324.1,33.8L330.8,34.3L331.9,30.4L337.4,27.6L337.1,23L341.7,15.9L340.9,9L345.9,4.5L354.4,4.4L357,0L362,5.1L365.8,6.3Z","cx":344,"cy":40,"gj":false},"영광군":{"d":"M191,30.6L195,35.9L190,36.3L191,30.6ZM279,14.2L285.4,15.6L287.5,18.8L286,25.3L293.9,34.3L293.5,40.2L296.2,44.9L300.3,43.3L308.7,45.4L306.4,40.6L311.2,37.9L315.5,41.4L319.6,41.8L314.1,48.4L312.1,54.2L307.3,57.1L308.7,63.8L306.9,72L296.7,76.3L289.9,76.1L285.9,74.1L279.5,75.4L276.4,78.6L273.2,75.5L267.5,76.9L262.7,80.6L256.8,73.7L250,77.3L248,65L250.8,58.1L253.5,58.6L253.3,49.7L260.6,49.4L264.6,45.3L264.7,39.5L268.7,29.4L270.3,19.3L273.6,14.5L279,14.2Z","cx":284,"cy":50,"gj":false},"함평군":{"d":"M308.7,63.8L310.7,62.9L319.2,70L321.3,73.7L325,79.5L321.5,80.7L321.8,93.2L315.2,100.2L309.4,100.1L307.8,108.4L310.1,118.8L309.3,123.5L304.4,128.6L300.9,125.1L298.2,128.2L292,124.5L289.7,124.8L289.2,117.5L283.5,116.7L282.2,111.6L285.1,105.7L280.9,103.4L281.5,99L278.6,95.5L273.2,95L262.7,80.6L267.5,76.9L273.2,75.5L276.4,78.6L279.5,75.4L285.9,74.1L289.9,76.1L296.7,76.3L306.9,72L308.7,63.8Z","cx":296,"cy":94,"gj":false},"무안군":{"d":"M280.9,103.4L285.1,105.7L282.2,111.6L283.5,116.7L289.2,117.5L289.7,124.8L292,124.5L298.2,128.2L292.9,143.5L299.6,152L300.7,156.3L299.7,165.1L293.5,177L288.7,179.9L281.3,173.9L280,167.6L277,163L271.6,161.2L268.1,154.8L267,149.6L270.1,144.2L267.4,142.1L266.5,135.3L267.9,131.6L264.8,129.2L262.2,140.1L257.4,143.4L254.7,142.1L252.9,136.2L247.5,130.7L249.8,125.4L255.3,129.3L260.7,125.4L257.6,121.4L266.9,115.7L265.3,110.2L259.2,112.3L257.6,104.3L254.3,99.8L248.7,110L246.7,107.1L240.7,108.5L237.4,103.1L237.7,97.6L236.5,95.4L239.7,86.4L242.8,85.4L253.6,88.4L257.8,84.2L257.7,93.1L255.8,99L262.6,104.1L268.5,102.8L270.6,106L269,113.8L277.7,108L280.9,103.4Z","cx":267,"cy":124,"gj":false},"영암군":{"d":"M356.5,154.4L363.7,154.8L360.7,162.2L353.2,164.8L350.8,177.1L345.4,175.8L340.6,182.9L331.5,180.7L322.3,188.7L327.2,194L324.8,199.5L315.5,202.1L303.1,202L297.9,201.8L295.6,195.5L289.5,188.4L283.8,187.6L281.4,189.9L277.4,187.9L268.7,187.4L267.3,189.7L266.9,189.5L262.3,187.7L265.1,184L264.9,180.5L279.3,176.4L278.4,174.1L281.3,173.9L288.7,179.9L293.5,177L299.7,165.1L300.7,156.3L304.1,153.4L304.7,148.9L311.4,140L314.9,140.9L321,148.7L325.6,150.2L326,142.8L323.2,138.6L324.5,135.8L330.8,136.9L334.3,142.7L335.3,149L344.6,147.2L348.6,152.3L352.7,155.1L356.5,154.4Z","cx":312,"cy":170,"gj":false},"해남군":{"d":"M266.9,189.5L267.3,189.7L266.7,192.3L280,195.7L279.7,200.5L283.9,207.5L288.6,205.9L293.3,207.8L303.1,202L315.5,202.1L324.8,199.5L332.2,201.9L328.6,212.6L328.7,220.5L325.2,224.4L330,231.5L326.8,236.9L328.1,241.7L327.7,255.1L334.5,254.9L338.2,258.9L335.7,261.9L330.5,262.6L327.1,266L321.1,267.2L314.1,272.1L314.7,283L311.1,285.9L311.1,291.6L301.6,292.3L299,296.9L293.3,298.1L292.3,292.8L295.3,289.1L293.8,282.4L285.9,282.9L285.9,277.2L287.8,271.7L293.2,269L287.5,263.9L284.9,265.9L281.1,260.1L283,257L280.6,253.3L283.9,245.7L281.5,239.4L275.8,236.3L269.5,236.4L265,231.7L261.4,232.2L255.6,229.1L251.5,230.8L249.7,224.7L244.2,223.3L245.5,214.9L242.4,214L239.3,206.3L239.9,198.8L243.2,194.3L243.2,190.1L245.7,182.6L248.5,181.7L255.8,187.7L259,196.5L256.8,198.5L257.2,203.8L262.7,212.3L264.3,217.8L276.3,224.8L275,218.9L263.8,211.4L260.6,203.2L257.6,200.8L262.6,197.6L266.9,189.5Z","cx":285,"cy":233,"gj":false},"강진군":{"d":"M350.8,177.1L354.6,180.5L356.5,185.3L361.9,191.7L361.6,195.4L364.7,204.3L367,217.4L363.6,216.4L363.3,222.6L367.4,227.9L367.3,234.4L360.7,246L362.8,253.8L360.9,259.7L355.6,260.3L349.6,255.9L348.8,244.2L350.1,229.9L345.8,221.6L343.2,240.9L343,249L339.4,250.4L340.9,254.5L338.2,258.9L334.5,254.9L327.7,255.1L328.1,241.7L326.8,236.9L330,231.5L325.2,224.4L328.7,220.5L328.6,212.6L332.2,201.9L324.8,199.5L327.2,194L322.3,188.7L331.5,180.7L340.6,182.9L345.4,175.8L350.8,177.1Z","cx":346,"cy":221,"gj":false},"장흥군":{"d":"M400.6,162.7L396,174.6L395.2,179.7L396,188.2L387.1,195.8L389.1,201.6L396.5,201.7L402.4,211.3L401.3,213.2L391.7,218.7L391.5,223.9L389.2,229.8L390.3,237.4L387.1,236.7L384.3,239.7L387.3,243.3L385.1,247L388,250.6L383.4,255L379.8,260.5L377.5,259.3L367.4,258.3L369.6,265.4L360.9,259.7L362.8,253.8L360.7,246L367.3,234.4L367.4,227.9L363.3,222.6L363.6,216.4L367,217.4L364.7,204.3L361.6,195.4L361.9,191.7L356.5,185.3L354.6,180.5L350.8,177.1L353.2,164.8L360.7,162.2L363.7,154.8L369.1,152.8L372,153.9L373.4,160.3L380.2,164.9L388.5,159.5L391.1,163.2L394.9,161.8L400.6,162.7Z","cx":378,"cy":207,"gj":false},"화순군":{"d":"M416.9,73.2L422.6,73.3L430.9,68.3L434.4,75.4L431.8,80.9L433.6,88.8L430.4,98L431.5,118.9L429.7,120.3L428.9,127.6L424.3,130.7L419.2,129.9L413.5,137.5L409.6,140.4L409.3,145.8L411.2,153.6L405.9,156.8L405.4,160.4L400.6,162.7L394.9,161.8L391.1,163.2L388.5,159.5L380.2,164.9L373.4,160.3L372,153.9L369.1,152.8L363.7,154.8L356.5,154.4L361.9,150.5L366.1,149.5L367.2,146.1L365.3,137.7L367.7,134.6L367.5,130.1L371.1,124.7L365.8,119.6L372.2,108.1L370.6,102.4L376.2,99L378.9,103.3L382.9,103.7L386,99.5L390.2,98.4L392.3,93.3L395,88.5L397,87.3L407.3,92.8L411,88.8L406.8,80.8L409.6,76.8L416.9,73.2Z","cx":396,"cy":121,"gj":false},"보성군":{"d":"M478.8,164L474.8,168L479.4,169.4L473.5,174.7L471.8,171.4L465.6,165.9L460.8,166.2L458.7,169.5L452.8,169.5L449.8,174.2L444.1,174.8L443.1,178.5L436,187.9L433.7,195.8L430.1,199.2L421.9,198.8L419.2,196.7L414.9,203.1L407,206.6L402.4,211.3L396.5,201.7L389.1,201.6L387.1,195.8L396,188.2L395.2,179.7L396,174.6L400.6,162.7L405.4,160.4L405.9,156.8L411.2,153.6L409.3,145.8L409.6,140.4L413.5,137.5L419.2,129.9L424.3,130.7L428.9,127.6L434.4,125.1L434.8,130.3L438.4,133.2L440.7,138L439.7,148.2L444.9,151L452.9,146.8L455.6,146.9L463,154.7L470.4,158.2L471.3,161.5L475.6,161.4L478.8,164Z","cx":435,"cy":166,"gj":false},"고흥군":{"d":"M488.4,254.5L496.4,257L503.5,260.5L503.1,265.2L494.4,269.6L494.1,264.3L488.7,262.5L486.5,258.7L488.4,254.5ZM438.8,249.2L441.3,253.8L436.7,264.4L427.5,263.7L418.6,264.7L413.1,255.9L418.6,250.1L421,254.1L431.6,248.8L433.9,250.4L438.8,249.2ZM487.4,236L491.6,238.3L488,244.9L494.1,245.4L496.3,248.8L492.1,251.6L486.1,252.8L482.3,242.7L487.4,236ZM473.5,174.7L472.6,177.5L474.7,183L469.8,186.9L473.4,194.4L486,198.6L485.5,204.4L491.3,204.3L493.2,209.3L497.2,224.4L493.2,227.8L487,226.5L484.5,228.2L477.7,224.9L474.1,227.1L476.9,232.2L482.2,234.4L480.1,239.7L475.5,246.4L471,246.8L470.4,251L460.9,254.1L462.6,261.2L459.2,262.2L452,253.2L451.2,248.1L445.8,242.7L436,242.3L432.9,239.3L427.7,241.9L418.2,240.2L416.2,232.6L422.6,226.4L428.2,223.5L428.4,215.6L434,210.3L435.6,215.2L439.8,211.5L440.8,202.4L444.5,194.7L450.2,192.4L451.9,197.7L450.5,204.1L457.7,206L458.3,201.8L461.6,195.2L459.6,184.2L455.4,184.8L453.2,189.6L448.6,187.1L446.8,189.3L443,182L443.1,178.5L444.1,174.8L449.8,174.2L452.8,169.5L458.7,169.5L460.8,166.2L465.6,165.9L471.8,171.4L473.5,174.7Z","cx":459,"cy":210,"gj":false},"구례군":{"d":"M511.9,44.5L515.7,54.7L518.6,56.3L520.3,62.5L520.1,69.3L521.6,75.7L518.1,81.6L517.1,92.4L514.2,91.9L509.1,94.9L506.7,98.3L502.9,95.3L500.1,90.8L496.6,90.8L492.2,83.8L485,79.7L480,75.3L476.6,74.6L470.6,73.4L470.7,65.4L475.6,59.5L472.1,45.9L481.8,31.8L490.1,30L496.2,32L502.2,37.4L511.9,44.5Z","cx":499,"cy":68,"gj":false},"곡성군":{"d":"M431.2,37.7L431.4,41.1L437.1,42.7L438.7,37.5L446.6,43.8L452.3,43.2L455.8,46L466.2,41.4L472.1,45.9L475.6,59.5L470.7,65.4L470.6,73.4L476.6,74.6L477.7,85.3L472.5,91.5L470.2,96.8L463.9,97.3L461,103.8L458.9,104.5L446.4,97.3L437,88.7L433.6,88.8L431.8,80.9L434.4,75.4L430.9,68.3L422.6,73.3L416.9,73.2L414.6,72L409.8,59.7L412.9,56.4L411.6,49.6L412.8,46.3L416.7,46.9L427.6,38.7L431.2,37.7Z","cx":443,"cy":65,"gj":false},"담양군":{"d":"M412.8,46.3L411.6,49.6L412.9,56.4L409.8,59.7L414.6,72L416.9,73.2L409.6,76.8L406.8,80.8L411,88.8L407.3,92.8L397,87.3L395,88.5L394.5,83.1L397.1,80L393.2,74.9L387.8,75.2L378.9,61.7L378.6,58.9L373.4,57.1L368,58.9L363.9,49.3L364.9,41.1L369.7,40.3L367.3,36.1L369.5,30.4L375.8,25.1L376.3,21.2L379,22.9L385.3,23L388.1,20.8L386.7,14.8L395.5,7.1L400,5.2L400.6,12.6L402.9,13.8L401.5,21.9L399.1,24.2L407.3,30.2L405.6,42.5L412.8,46.3Z","cx":393,"cy":49,"gj":false},"광양시":{"d":"M544.8,135.3L545.1,139.1L550.6,139.1L554.6,143.2L554.6,150.5L549.7,148.8L549.4,145.6L538,144L542.2,135L544.8,135.3ZM549.5,131.9L551.3,138.6L546.4,138.4L545.5,134.2L549.5,131.9ZM553.2,125L550.5,127.5L549.6,130.6L543,133.7L537.2,139.3L535.2,143.3L524.8,150.5L520.1,143.1L517.7,146.2L515.5,148L511.8,142.1L512,136.8L505.7,132L506.3,125.6L508.4,119.5L507.8,113L503.4,109.6L501.2,103.7L502.9,95.3L506.7,98.3L509.1,94.9L514.2,91.9L517.1,92.4L518.1,81.6L521.6,75.7L525.9,81.5L528.8,82.3L536.1,89.5L536,96.2L541,101.5L544.9,102.4L545.5,106.5L551.3,109.4L552,114.6L555.1,117.7L553.2,125Z","cx":527,"cy":115,"gj":false},"나주시":{"d":"M321.8,93.2L339.3,95.2L343.8,99.2L345.6,104.5L355.5,108.8L363.1,102.4L370.6,102.4L372.2,108.1L365.8,119.6L371.1,124.7L367.5,130.1L367.7,134.6L365.3,137.7L367.2,146.1L366.1,149.5L361.9,150.5L356.5,154.4L352.7,155.1L348.6,152.3L344.6,147.2L335.3,149L334.3,142.7L330.8,136.9L324.5,135.8L323.2,138.6L326,142.8L325.6,150.2L321,148.7L314.9,140.9L311.4,140L304.7,148.9L304.1,153.4L300.7,156.3L299.6,152L292.9,143.5L298.2,128.2L300.9,125.1L304.4,128.6L309.3,123.5L310.1,118.8L307.8,108.4L309.4,100.1L315.2,100.2L321.8,93.2Z","cx":333,"cy":130,"gj":false},"순천시":{"d":"M502.9,95.3L501.2,103.7L503.4,109.6L507.8,113L508.4,119.5L506.3,125.6L505.7,132L512,136.8L511.8,142.1L515.5,148L514.4,150.5L506.3,149.7L503.3,152.6L506.4,158.2L504.6,161.3L500.6,159.7L498.9,152.6L493.8,157.8L494.4,160.4L478.8,164L475.6,161.4L471.3,161.5L470.4,158.2L463,154.7L455.6,146.9L452.9,146.8L444.9,151L439.7,148.2L440.7,138L438.4,133.2L434.8,130.3L434.4,125.1L428.9,127.6L429.7,120.3L431.5,118.9L430.4,98L433.6,88.8L437,88.7L446.4,97.3L458.9,104.5L461,103.8L463.9,97.3L470.2,96.8L472.5,91.5L477.7,85.3L476.6,74.6L480,75.3L485,79.7L492.2,83.8L496.6,90.8L500.1,90.8L502.9,95.3Z","cx":476,"cy":124,"gj":false},"여수시":{"d":"M453.3,357L454.9,369.8L450.8,364.3L453.3,357ZM445.8,309.9L447,315.9L445.8,320L439.7,318.3L440.9,313.5L445.8,309.9ZM558.9,257.3L560,261L559.3,268.5L554.8,268L558.9,257.3ZM545.7,234.2L548.8,234.3L550,238.7L553.7,242.7L557.1,249.2L551,248.5L542.4,243.5L540,237.7L545.7,234.2ZM528.6,226.1L533,230.1L528.8,234.2L524.7,228.6L528.6,226.1ZM505.3,217.6L509.3,219L505.9,223.4L502.2,221.5L505.3,217.6ZM547.2,188.8L554.9,193L556,196.8L552.9,202L556.7,207.1L557.8,214.8L556.2,219.6L559,224.8L554.8,226.1L547.4,224.2L539.3,216.6L542.2,213L542,208.4L547.1,204.8L549.2,199.9L549.1,194.1L547.2,188.8ZM540.7,147.3L546.6,149.4L546.7,154L540.8,155.2L535.4,150.9L540.7,147.3ZM504.6,161.3L506.4,158.2L503.3,152.6L506.3,149.7L514.4,150.5L515.5,148L517.7,146.2L519.5,149L514.4,153.4L518.7,159.8L525.4,164.6L531,162.9L536.9,157.3L544.1,158.5L549.9,155.9L552.6,157.2L551.6,169L548.6,176L547.4,188.2L538,192.2L528.5,183.4L524.7,193.5L521.5,196.9L521.4,200.5L524.8,210.9L520.8,212.4L514.4,209.4L510.4,211.4L506.5,206.7L506.4,200L509.7,190.2L512.1,189L514.5,182.8L512.3,181.8L507.7,170.5L500.8,169.7L504.6,161.3Z","cx":521,"cy":175,"gj":false},"목포시":{"d":"M271.6,161.2L277,163L280,167.6L281.3,173.9L278.4,174.1L277.7,172.3L269.4,176.4L262.7,176.9L261.3,174.3L263,168.8L266.7,162.9L271.6,161.2Z","cx":272,"cy":169,"gj":false},"광산구":{"d":"M359.1,64.5L362.5,66.3L363.6,76.2L359.6,77.3L356.5,81L357.6,86.3L354.9,92.7L352.3,94.2L352.2,98.8L345.6,104.5L343.8,99.2L339.3,95.2L321.8,93.2L321.5,80.7L325,79.5L321.3,73.7L326.4,73.4L328.3,68L334.7,68.8L335.1,65.1L338.5,58.8L344.2,58.2L342.4,63.2L352.8,67.1L359.1,64.5Z","cx":344,"cy":78,"gj":true},"북구":{"d":"M368,58.9L373.4,57.1L378.6,58.9L378.9,61.7L387.8,75.2L393.2,74.9L397.1,80L394.5,83.1L395,88.5L392.3,93.3L389.4,87.7L386.2,87.7L383.6,83.9L375.6,80.5L373.7,84L369,79.7L359.6,77.3L363.6,76.2L362.5,66.3L359.1,64.5L368,58.9Z","cx":379,"cy":75,"gj":true},"남구":{"d":"M374.3,84.6L377.9,89.9L374.9,93.2L376.2,99L370.6,102.4L363.1,102.4L355.5,108.8L345.6,104.5L352.2,98.8L355.7,99.2L360,95.8L369.7,92.7L369.2,85.2L374.3,84.6Z","cx":366,"cy":96,"gj":true},"서구":{"d":"M359.6,77.3L369,79.7L373.7,84L374.3,84.6L369.2,85.2L369.7,92.7L360,95.8L355.7,99.2L352.2,98.8L352.3,94.2L354.9,92.7L357.6,86.3L356.5,81L359.6,77.3Z","cx":362,"cy":88,"gj":true},"동구":{"d":"M374.3,84.6L373.7,84L375.6,80.5L383.6,83.9L386.2,87.7L389.4,87.7L392.3,93.3L390.2,98.4L386,99.5L382.9,103.7L378.9,103.3L376.2,99L374.9,93.2L377.9,89.9L374.3,84.6Z","cx":381,"cy":92,"gj":true}}}</script>
+<script>
+const DATA=JSON.parse(document.getElementById("data").textContent);
+const A=DATA.agg, SH=DATA.shapes;
+const scales=["--c0","--c1","--c2","--c3","--c4","--c5"].map(v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim());
+const modes={
+ policy:{title:"시·군·구별 재생에너지 설비용량",key:"mw",unit:"MW"},
+ biz:{title:"허가는 났는데 아직 시작 안 한 용량",key:"idle_mw",unit:"MW"},
+ citizen:{title:"우리 동네 발전소 수",key:"n",unit:"곳"}
+};
+let mode="policy", sel=null;
+const fmt=x=>x==null?"—":Number(x).toLocaleString("ko-KR");
+const short=n=>n.replace(/(시|군)$/,"");
+function color(v,max){if(v==null||!max)return "#e9ecef";const i=Math.min(5,Math.floor(Math.sqrt(v/max)*5.99));return scales[i]}
+function drawMap(){
+  const m=modes[mode], vals=Object.values(A).map(d=>d[m.key]||0), max=Math.max(...vals);
+  document.getElementById("mapTitle").textContent=m.title;
+  const svg=document.getElementById("map"); const NS="http://www.w3.org/2000/svg";
+  svg.innerHTML="";
+  const g=document.createElementNS(NS,"g"); svg.appendChild(g);
+  const gjNames=Object.keys(SH).filter(n=>SH[n].gj);
+  const addShape=(parent,name,label)=>{
+    const s=SH[name], d=A[name], p=document.createElementNS(NS,"path");
+    p.setAttribute("d",s.d); p.setAttribute("fill",color(d[m.key],max));
+    p.setAttribute("class","sgg"+(sel===name?" sel":"")+(d.small===0&&!s.gj?" nofile":""));
+    const t=document.createElementNS(NS,"title"); t.textContent=`${name} · ${fmt(d[m.key])}${m.unit}`; p.appendChild(t);
+    p.onclick=()=>{sel=name;drawMap();showCitizen(name)};
+    parent.appendChild(p);
+    if(label){const tx=document.createElementNS(NS,"text");tx.setAttribute("x",s.cx);tx.setAttribute("y",s.cy);tx.setAttribute("text-anchor","middle");tx.textContent=short(name);parent.appendChild(tx)}
+  };
+  Object.keys(SH).filter(n=>!SH[n].gj).forEach(n=>addShape(g,n,true));
+  gjNames.forEach(n=>addShape(g,n,false));
+  // 광주 확대
+  const xs=gjNames.flatMap(n=>SH[n].d.match(/[\d.]+,[\d.]+/g).map(p=>+p.split(",")[0]));
+  const ys=gjNames.flatMap(n=>SH[n].d.match(/[\d.]+,[\d.]+/g).map(p=>+p.split(",")[1]));
+  const bx=Math.min(...xs),by=Math.min(...ys),bw=Math.max(...xs)-bx,bh=Math.max(...ys)-by;
+  const W=+DATA.w, box=150, sc=box/Math.max(bw,bh), ox=W+14, oy=8;
+  const fr=document.createElementNS(NS,"rect");fr.setAttribute("x",ox-6);fr.setAttribute("y",oy-4);fr.setAttribute("width",box+12);fr.setAttribute("height",bh*sc+22);fr.setAttribute("rx",8);fr.setAttribute("class","inset-frame");svg.appendChild(fr);
+  const tt=document.createElementNS(NS,"text");tt.setAttribute("x",ox);tt.setAttribute("y",oy+bh*sc+14);tt.setAttribute("class","inset-title");tt.textContent="구 광주광역시 확대";svg.appendChild(tt);
+  const ig=document.createElementNS(NS,"g");ig.setAttribute("transform",`translate(${ox},${oy}) scale(${sc}) translate(${-bx},${-by})`);svg.appendChild(ig);
+  gjNames.forEach(n=>addShape(ig,n,false));
+  gjNames.forEach(n=>{const s=SH[n],tx=document.createElementNS(NS,"text");tx.setAttribute("x",ox+(s.cx-bx)*sc);tx.setAttribute("y",oy+(s.cy-by)*sc);tx.setAttribute("text-anchor","middle");tx.textContent=n;svg.appendChild(tx)});
+  document.getElementById("legend").innerHTML="적음 "+scales.map(s=>`<i style="background:${s}"></i>`).join("")+` 많음 (${m.unit}) &nbsp; <span class="dash"></span> 시·군 파일 없음`;
+}
+function drawPolicy(){
+  const all=Object.entries(A), tot=all.reduce((a,[,d])=>a+d.mw,0), gj=all.filter(([,d])=>d.side==="gj").reduce((a,[,d])=>a+d.mw,0);
+  k1.textContent=fmt(Math.round(tot))+"MW";
+  k2.textContent=Math.round(gj/tot*100)+" : "+Math.round((tot-gj)/tot*100);
+  const s=DATA.bysrc, st=Object.values(s).reduce((a,b)=>a+b,0); k3.textContent=Math.round((s["태양광"]||0)/st*100)+"%";
+  const top=all.filter(([,d])=>d.side==="jn").sort((a,b)=>b[1].mw-a[1].mw).slice(0,8).map(([n,d])=>({n,mw:d.mw,gj:false}));
+  top.push({n:"구 광주 5구",mw:gj,gj:true});
+  const max=Math.max(...top.map(d=>d.mw));
+  bars.innerHTML=top.map(d=>`<div class="row"><span>${d.n}</span><div class="b ${d.gj?"gj":""}" style="width:${Math.max(1.5,d.mw/max*100)}%"></div><span class="n">${fmt(Math.round(d.mw))}MW</span></div>`).join("");
+  const ys=Object.entries(DATA.years), ym=Math.max(...ys.map(([,v])=>v));
+  spark.innerHTML=ys.map(([y,v])=>`<div style="height:${v/ym*100}%" title="${y}년 ${fmt(v)}곳"></div>`).join("");
+  y0.textContent=ys[0][0]; y1.textContent=ys[ys.length-1][0];
+}
+function drawBiz(){
+  bizRows.innerHTML=Object.entries(A).filter(([,d])=>d.idle_mw>0).sort((a,b)=>b[1].idle_mw-a[1].idle_mw).slice(0,8)
+   .map(([n,d],i)=>`<tr><td>${n}</td><td>${fmt(Math.round(d.idle_mw))}MW</td><td>${fmt(d.idle_n)}건</td><td>${i<3?'<span class="pill">주목</span>':''}</td></tr>`).join("");
+}
+function showCitizen(name){
+  const d=A[name]; if(!d)return;
+  citizenOut.innerHTML=`<div class="big">${d.n==null?"?":fmt(d.n)+"곳"}</div><p style="margin:2px 0 10px"><b>${name}</b>의 재생에너지 발전소 · 설비용량 ${fmt(d.mw)}MW</p>
+  <p class="hint">어림하면 약 <b>${fmt(Math.round(d.mw*365/100)*100)}</b>가구가 1년 동안 쓰는 전기 (태양광 하루 3.6시간 발전 · 가구당 연 3,600kWh로 셈)</p>
+  ${d.n==null?'<p class="hint">이 지역 파일은 동별 합계뿐이라 발전소 수를 알 수 없습니다.</p>':''}
+  ${d.small===0&&d.side==="jn"?'<p class="hint">이 지역은 시·군 파일이 없어 1MW 이상만 들어 있습니다.</p>':''}`;
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));
+  mode=t.dataset.mode;
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+mode));
+  drawMap();
+});
+go.onclick=()=>{const q=document.getElementById("q").value.trim().replace(/(시|군|구)$/,"");const n=q&&Object.keys(A).find(x=>x.startsWith(q));
+  if(n){sel=n;drawMap();showCitizen(n)}else citizenOut.innerHTML='<p class="hint">못 찾았습니다. 시·군·구 이름을 넣어 보세요.</p>'};
+q.addEventListener("keydown",e=>{if(e.key==="Enter")go.click()});
+function summary(){
+  const all=Object.entries(A), tot=all.reduce((a,[,d])=>a+d.mw,0), gj=all.filter(([,d])=>d.side==="gj").reduce((a,[,d])=>a+d.mw,0);
+  const top=all.sort((a,b)=>b[1].mw-a[1].mw).slice(0,5).map(([n,d])=>`${n} ${fmt(Math.round(d.mw))}MW`).join(", ");
+  const idle=Object.entries(A).filter(([,d])=>d.idle_mw>0).sort((a,b)=>b[1].idle_mw-a[1].idle_mw).slice(0,3).map(([n,d])=>`${n} ${fmt(Math.round(d.idle_mw))}MW`).join(", ");
+  return `[우리 시 재생에너지 — 공공데이터포털 파일을 합쳐 만든 숫자]
+- 통합시 재생에너지(3MW 이하 허가분): 약 ${fmt(Math.round(tot))}MW
+- 구 광주 ${Math.round(gj/tot*100)}% : 구 전남 ${Math.round((tot-gj)/tot*100)}% (광주 5구 합 ${fmt(Math.round(gj))}MW)
+- 많은 곳: ${top}
+- 허가는 났는데 아직 시작 안 한 용량이 많은 곳: ${idle}
+- 한계: 3MW 넘는 대형 발전소·해상풍력은 빠져 있음 · 파일마다 기준 시점이 다름(2021~2026) · 고흥·진도·화순은 시·군 파일 없음`;
+}
+copySum.onclick=async()=>{const t=summary();try{await navigator.clipboard.writeText(t);copySum.textContent="✅ 복사했습니다 — ChatGPT에 붙여 넣으세요"}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();copySum.textContent="✅ 복사했습니다"}};
+drawMap();drawPolicy();drawBiz();
+</script>
+</body>
+</html>
