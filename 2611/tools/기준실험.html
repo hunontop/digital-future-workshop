@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>기준 실험</title><style>
+:root{--ink:#1d2433;--sub:#5a6478;--line:#d9dee8;--bg:#f6f7fa;--card:#fff;--acc:#0e3a78;--on:#0e3a78;--off:#b8c0cc;--warn:#b4490b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Pretendard","Malgun Gothic",sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:26px;margin:0 0 4px}.lead{color:var(--sub);margin:0 0 14px}
+.result{position:sticky;top:0;z-index:2;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:0 0 14px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.nums{display:flex;flex-wrap:wrap;gap:6px 28px;align-items:baseline}
+.total{font-size:44px;font-weight:700;color:var(--acc);letter-spacing:-1px;line-height:1.15}.total small{font-size:20px;margin-left:3px}
+.idle{font-size:18px}.idle b{font-size:22px}
+.diff{margin:4px 0 0;color:var(--sub)}.diff b{color:var(--warn)}
+.row{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin:0 0 8px;cursor:pointer}
+.row.off{background:#fff7ef;border-color:#f0c9a8}
+.row input{position:absolute;opacity:0;width:1px;height:1px}
+.sw{flex:none;width:48px;height:27px;border-radius:99px;background:var(--off);position:relative;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .15s}
+input:checked+.sw{background:var(--on)}input:checked+.sw::after{left:24px}
+input:focus-visible+.sw{outline:3px solid #7aa7e0;outline-offset:2px}
+.txt b{display:block;font-size:17px}.txt span{color:var(--sub);font-size:14px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 0}
+button{font:inherit;border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:8px;padding:6px 14px;cursor:pointer}
+.note{color:var(--sub);font-size:14px;margin:14px 0 0}footer{margin-top:18px;color:var(--sub);font-size:13px}
+@media (max-width:560px){.total{font-size:36px}}
+</style></head><body><main>
+<h1>기준 실험</h1>
+<p class="lead">같은 파일 21개입니다. 기준만 바꾸면 합계가 움직입니다. 모두 켠 상태가 브리핑의 강사 기준입니다.</p>
+<section class="result" aria-live="polite">
+ <div class="nums"><div class="total"><span id="total"></span><small>MW</small></div><div class="idle">그중 미개시 <b id="idle"></b> MW</div></div>
+ <p class="diff" id="diff"></p>
+</section>
+<div id="rows"></div>
+<div class="bar"><button type="button" id="all">모두 켜기</button></div>
+<p class="note">계산은 어느 조합이든 맞습니다. 어느 기준을 쓸지는 업무 목적이 정합니다. 줄마다 적힌 「끄면」은 강사 기준에서 그 스위치 하나만 껐을 때입니다.</p>
+<footer>만든 사람: 최상훈 · choihunontop@gmail.com · 자료: 공공데이터포털 광주 · 전남 재생에너지 발전소 파일 21개</footer>
+</main><script>
+var G=[{"s":"idle","g":0,"d":0,"h":0,"n":0,"a":0,"l":0,"kw":404348.23},{"s":"idle","g":0,"d":0,"h":0,"n":1,"a":0,"l":0,"kw":510331.93},{"s":"op","g":0,"d":0,"h":0,"n":0,"a":0,"l":0,"kw":3874525.19},{"s":"op","g":0,"d":0,"h":0,"n":0,"a":1,"l":0,"kw":37977.66},{"s":"op","g":0,"d":0,"h":1,"n":0,"a":0,"l":0,"kw":193916.59},{"s":"op","g":0,"d":1,"h":0,"n":0,"a":0,"l":0,"kw":93610.26},{"s":"op","g":1,"d":0,"h":0,"n":0,"a":0,"l":0,"kw":291668.98},{"s":"unknown","g":0,"d":0,"h":0,"n":0,"a":0,"l":0,"kw":1005146.45},{"s":"unknown","g":0,"d":0,"h":0,"n":0,"a":0,"l":1,"kw":123519.65},{"s":"unknown","g":0,"d":1,"h":0,"n":0,"a":0,"l":0,"kw":6706.29}];
+var S=[
+ ["문 닫은 발전소는 뺀다","폐업 · 허가취소 · 폐기"],
+ ["아직 짓지 않은 것도 센다","인허가 · 준비중 · 사업미개시"],
+ ["겹친 발전소는 한 번만 센다","시 · 군 파일과 도 파일에 함께 실린 것"],
+ ["합계 줄은 뺀다","광양 파일 맨 아래 「총합계」"],
+ ["나주는 「사업개시일」 열을 믿는다","끄면 「상태구분」 열을 믿는다 · 미개시가 달라진다"],
+ ["빈칸은 「모름」으로 둔다","끄면 빈칸을 미개시로 본다 · 미개시가 달라진다"],
+ ["주소를 끝까지 읽는다","끄면 줄임 주소 · 도 파일 안의 광주 주소를 버린다"],
+ ["가동을 멈춘 것도 센다","보성 「가동중단」"]];
+function calc(t){var a=0,b=0;G.forEach(function(g){
+ if((g.g&&t[0])||(g.d&&t[2])||(g.l&&t[3])||(g.a&&!t[6])||(g.h&&!t[7]))return;
+ var s=g.s;if(g.n&&!t[4])s="op";if(s==="unknown"&&!t[5])s="idle";if(s==="idle"&&!t[1])return;
+ a+=g.kw;if(s==="idle")b+=g.kw});return[a/1000,b/1000]}
+var fmt=function(x){return Math.round(x).toLocaleString("ko-KR")};
+var sign=function(x){var r=Math.round(x);return(r>0?"+":r<0?"−":"")+Math.abs(r).toLocaleString("ko-KR")};
+var ALL=[1,1,1,1,1,1,1,1],base=calc(ALL),box=document.getElementById("rows");
+S.forEach(function(s,i){var o=ALL.slice();o[i]=0;var c=calc(o),dT=c[0]-base[0],dI=c[1]-base[1];
+ var eff=Math.round(dT)?"끄면 합계 "+sign(dT)+"MW":"끄면 미개시 "+sign(dI)+"MW";
+ var l=document.createElement("label");l.className="row";
+ l.innerHTML='<input type="checkbox" checked data-i="'+i+'"><span class="sw"></span><span class="txt"><b>'+"①②③④⑤⑥⑦⑧"[i]+" "+s[0]+"</b><span>"+s[1]+" · "+eff+"</span></span>";box.appendChild(l)});
+var ins=[].slice.call(document.querySelectorAll("input"));
+function show(){var t=ins.map(function(x){return x.checked?1:0}),c=calc(t);
+ ins.forEach(function(x){x.closest(".row").classList.toggle("off",!x.checked)});
+ document.getElementById("total").textContent=fmt(c[0]);document.getElementById("idle").textContent=fmt(c[1]);
+ var d=c[0]-base[0],n=t.filter(function(v){return!v}).length;
+ document.getElementById("diff").innerHTML=n?"강사 기준과 차이 <b>"+sign(d)+"MW</b> · 끈 스위치 "+n+"개":"강사 기준입니다"}
+document.addEventListener("change",show);
+document.getElementById("all").onclick=function(){ins.forEach(function(x){x.checked=true});show()};show();
+</script></body></html>
