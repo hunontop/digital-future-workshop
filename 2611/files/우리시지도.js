@@ -16,7 +16,7 @@
  *   색: ["#eef4f1", … ]          적음 → 많음 6단계
  * 돌려주는 것: { 다시칠하기(숫자), 이름들 }
  *
- * 인터넷이 되면 Leaflet + 바탕 지도(CARTO · OpenStreetMap) 위에 칠한다.
+ * 인터넷이 되면 Leaflet + 바탕 지도(Esri) 위에 칠한다.
  * 인터넷이 안 되면 바탕 없이 시·군·구 칠하기만 그린다(SVG).
  * 경계는 이 파일 안에 들어 있다 — 따로 읽어 올 파일이 없다.
  * 경계 출처: southkorea/southkorea-maps (통계청 2013 시군구 경계 단순화판)
@@ -29,12 +29,12 @@
   var LEAFLET_JS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
   var LEAFLET_CSS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
   var 대기 = null;
-  // 키 없이 쓰는 바탕 지도. 파일로 연 페이지(file://)에서도 뜨는 것만 둔다.
+  // 키 없이 쓰는 바탕 지도. 파일로 연 페이지(file://)는 Referer가 없어 OSM이 「Access blocked」 그림을 준다 → 기본은 esri.
   var 바탕들 = {
     "osm": ["https://tile.openstreetmap.org/{z}/{x}/{y}.png", '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'],
     "esri": ["https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", "Tiles &copy; Esri"]
   };
-  바탕들["기본"] = 바탕들["osm"];
+  바탕들["기본"] = 바탕들["esri"];
 
   function leaflet불러오기() {
     if (window.L) return Promise.resolve(true);
