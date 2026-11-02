@@ -78,6 +78,37 @@ details.caveat li{font-size:13.5px;margin:5px 0}
 .slot .cards .prop b{display:block;font-size:14px;margin-bottom:2px}
 .slot .cards .mine{border:2px solid var(--gj)}
 .copybtn{margin-top:12px;padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:12.5px;font-weight:600}
+.conv{margin-top:16px;border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--card)}
+.conv h3{margin:0 0 4px;font-size:16px}
+.conv-wrap{display:grid;grid-template-columns:minmax(260px,1fr) 2fr;gap:16px;align-items:start}
+.conv-in{background:#f3f7f6;border-radius:12px;padding:14px;display:grid;gap:12px}
+.conv-in label,.conv-in .lab{display:block;font-size:12.5px;font-weight:700;color:var(--sub);margin-bottom:4px}
+.conv-in select,.conv-in input[type=number]{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:14px;background:#fff;color:var(--ink)}
+.conv-in input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--accent)}
+.conv-unit{position:relative}
+.conv-unit input{padding-right:42px!important}
+.conv-unit span{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12.5px;color:var(--sub);pointer-events:none}
+.conv-btns{display:flex;gap:6px;flex-wrap:wrap}
+.conv-btns button{flex:1 1 auto;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.conv-btns button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.conv-reset{justify-self:start;padding:0;border:0;background:none;color:var(--sub);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer}
+.conv-out{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.conv-r{border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.conv-r .l{font-size:12.5px;font-weight:700;color:var(--sub)}
+.conv-r .v{font-size:27px;font-weight:800;letter-spacing:-.6px;line-height:1.25;margin-top:4px;color:var(--accent)}
+.conv-r.toe .v{color:#a86d12}
+.conv-r.dc .v{color:var(--gj)}
+.conv-r .f{font-size:11.5px;color:var(--sub);margin-top:6px;overflow-wrap:anywhere}
+.conv-dots{grid-column:1/-1;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.conv-dots .l{font-size:12.5px;font-weight:700;color:var(--sub);margin-bottom:8px}
+.conv-dots .d{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.conv-dots i{display:block;width:18px;height:18px;border-radius:4px;background:#e3e9f7}
+.conv-dots em{font-style:normal;font-size:12px;color:var(--sub);margin-left:4px}
+.conv-notes{margin:14px 0 0;padding:12px 16px 12px 30px;background:#fff8f0;border:1px solid #f0d9bd;border-radius:12px;font-size:12.5px;color:#5c4631}
+.conv-notes li{margin:3px 0}
+.conv-notes a{color:inherit}
+.conv-copy{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+@media (max-width:860px){.conv-wrap{grid-template-columns:1fr}.conv-out{grid-template-columns:1fr}}
 footer{max-width:1180px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-size:12px}
 footer details{margin-top:6px}
 .panel{display:none}.panel.on{display:block}
@@ -188,6 +219,42 @@ footer details{margin-top:6px}
     <div class="cards"></div>
   </section>
 
+  <!-- 환산기 6교시 (칸⑦ 아래) -->
+  <section class="conv" id="slot-convert">
+    <h3>6교시 · 환산기: MW를 우리가 아는 단위로</h3>
+    <p class="hint">시·군·구를 고르거나 설비용량을 직접 넣으면 바로 계산합니다. 위 지도에서 시·군·구를 눌러도 여기 값이 바뀝니다.</p>
+    <div class="conv-wrap">
+      <div class="conv-in">
+        <div><label for="convRegion">시·군·구</label><select id="convRegion"></select></div>
+        <div><label for="convMw">설비용량</label><div class="conv-unit"><input id="convMw" type="number" min="0" step="0.1" inputmode="decimal"><span>MW</span></div></div>
+        <div>
+          <label for="convCf">이용률 (가정)</label>
+          <div class="conv-unit"><input id="convCf" type="number" min="0" max="100" step="0.01" inputmode="decimal"><span>%</span></div>
+          <input id="convCfR" type="range" min="0" max="40" step="0.01" aria-label="이용률 조절">
+          <div class="conv-btns" id="convCfBtns"><button type="button" data-cf="15" aria-pressed="false">정책 기준 15%</button><button type="button" data-cf="14.52" aria-pressed="false">실측 평균 14.52%</button></div>
+        </div>
+        <div>
+          <span class="lab">석유환산 기준</span>
+          <div class="conv-btns" id="convStd"><button type="button" data-std="gen" aria-pressed="true">발전기준</button><button type="button" data-std="con" aria-pressed="false">소비기준</button></div>
+        </div>
+        <button type="button" class="conv-reset" id="convReset">처음 값으로</button>
+      </div>
+      <div class="conv-out" aria-live="polite">
+        <div class="conv-r"><div class="l">1년 발전량</div><div class="v" id="convKwh"></div><div class="f" id="convKwhF"></div></div>
+        <div class="conv-r toe"><div class="l">석유환산톤</div><div class="v" id="convToe"></div><div class="f" id="convToeF"></div></div>
+        <div class="conv-r dc"><div class="l">40MW 데이터센터</div><div class="v" id="convDc"></div><div class="f" id="convDcF"></div></div>
+        <div class="conv-dots" aria-hidden="true"><div class="l">네모 하나 = 40MW 데이터센터 한 곳의 1년 전기</div><div class="d" id="convDots"></div></div>
+        <div class="conv-copy" style="grid-column:1/-1"><button type="button" class="copybtn" id="convCopy" style="margin-top:0">환산 결과를 글로 복사</button></div>
+      </div>
+    </div>
+    <ul class="conv-notes">
+      <li><b>이용률:</b> 15%는 정책 기준이고, 2026년 1분기 실측 평균은 14.52%입니다.</li>
+      <li><b>환산 계수:</b> 에너지법 시행규칙의 에너지열량 환산기준(2022-11-21)입니다. 1kWh = 발전기준 0.000213toe, 소비기준 0.000229toe. 참고: <a href="https://tips.energy.or.kr/popup/toe.do" target="_blank" rel="noopener">EG-TIPS 환산 계산기</a></li>
+      <li><b>데이터센터:</b> 1년 내내 40MW를 쓴다고 보았습니다. 태양광은 낮에만 나고 데이터센터는 밤낮 돌기 때문에, 1년 총량만 맞춘 숫자입니다.</li>
+      <li><b>설비용량:</b> 3MW 이하 허가분 합계입니다. 3MW 넘는 대형 발전소와 해상풍력은 빠져 있고, 고흥·진도·화순은 시·군 파일이 없습니다.</li>
+    </ul>
+  </section>
+
   <!-- 칸⑧ 7교시 — 제안 카드 · 우리 부서라면 -->
   <section class="slot" id="slot-proposal">
     <h3>⏳ 7교시 — 제안 카드 · 우리 부서라면</h3>
@@ -230,7 +297,7 @@ function drawMap(){
     p.setAttribute("d",s.d); p.setAttribute("fill",color(d[m.key],max));
     p.setAttribute("class","sgg"+(sel===name?" sel":"")+(d.small===0&&!s.gj?" nofile":""));
     const t=document.createElementNS(NS,"title"); t.textContent=`${name} · ${fmt(d[m.key])}${m.unit}`; p.appendChild(t);
-    p.onclick=()=>{sel=name;drawMap();showCitizen(name)};
+    p.onclick=()=>{sel=name;drawMap();showCitizen(name);convPick(name)};
     parent.appendChild(p);
     if(label){const tx=document.createElementNS(NS,"text");tx.setAttribute("x",s.cx);tx.setAttribute("y",s.cy);tx.setAttribute("text-anchor","middle");tx.textContent=short(name);parent.appendChild(tx)}
   };
@@ -279,7 +346,7 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   drawMap();
 });
 go.onclick=()=>{const q=document.getElementById("q").value.trim().replace(/(시|군|구)$/,"");const n=q&&Object.keys(A).find(x=>x.startsWith(q));
-  if(n){sel=n;drawMap();showCitizen(n)}else citizenOut.innerHTML='<p class="hint">못 찾았습니다. 시·군·구 이름을 넣어 보세요.</p>'};
+  if(n){sel=n;drawMap();showCitizen(n);convPick(n)}else citizenOut.innerHTML='<p class="hint">못 찾았습니다. 시·군·구 이름을 넣어 보세요.</p>'};
 q.addEventListener("keydown",e=>{if(e.key==="Enter")go.click()});
 function summary(){
   const all=Object.entries(A), tot=all.reduce((a,[,d])=>a+d.mw,0), gj=all.filter(([,d])=>d.side==="gj").reduce((a,[,d])=>a+d.mw,0);
@@ -293,6 +360,67 @@ function summary(){
 - 한계: 3MW 넘는 대형 발전소·해상풍력은 빠져 있음 · 파일마다 기준 시점이 다름(2021~2026) · 고흥·진도·화순은 시·군 파일 없음`;
 }
 copySum.onclick=async()=>{const t=summary();try{await navigator.clipboard.writeText(t);copySum.textContent="✅ 복사했습니다 — ChatGPT에 붙여 넣으세요"}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();copySum.textContent="✅ 복사했습니다"}};
+// 환산기
+const CONV={f:{gen:["발전기준",0.000213],con:["소비기준",0.000229]},cf:15,std:"gen"};
+const convEl=id=>document.getElementById(id);
+const convTotal=Object.values(A).reduce((a,d)=>a+d.mw,0);
+const convNum=(x,n=0)=>Number(x).toLocaleString("ko-KR",{minimumFractionDigits:n,maximumFractionDigits:n});
+const convBig=(x,u)=>x>=1e8?`${convNum(x/1e8,1)}억 ${u}`:x>=1e4?`${convNum(x/1e4,1)}만 ${u}`:`${convNum(x,x>0&&x<10?1:0)} ${u}`;
+const convPlaces=x=>convNum(x,x===0?0:x>=10?1:2);
+convEl("convRegion").innerHTML=`<option value="__all">통합시 전체 (${fmt(Math.round(convTotal))}MW)</option>`
+  +Object.entries(A).sort((a,b)=>b[1].mw-a[1].mw).map(([n,d])=>`<option value="${n}">${n} (${convNum(d.mw,1)}MW)</option>`).join("")
+  +`<option value="__direct">직접 입력</option>`;
+function convResult(){
+  const clean=(v,hi)=>{const x=parseFloat(v);return Number.isFinite(x)?Math.min(Math.max(x,0),hi):0};
+  const mw=clean(convEl("convMw").value,1e7), cf=clean(convEl("convCf").value,100), [stdName,factor]=CONV.f[CONV.std];
+  const kwh=mw*1000*(cf/100)*8760;
+  return {mw,cf,stdName,factor,kwh,toe:kwh*factor,dc:kwh/(40000*8760)};
+}
+function convDraw(){
+  const r=convResult();
+  convEl("convKwh").textContent=convBig(r.kwh,"kWh");
+  convEl("convKwhF").textContent=`${convNum(r.mw,1)}MW × 1,000 × ${r.cf}% × 8,760시간 = ${convNum(r.kwh)}kWh`;
+  convEl("convToe").textContent=convBig(r.toe,"toe");
+  convEl("convToeF").textContent=`1년 발전량 × ${r.factor} (${r.stdName}) = ${convNum(r.toe)}toe`;
+  convEl("convDc").textContent=`${convPlaces(r.dc)}곳분`;
+  convEl("convDcF").textContent=`1년 발전량 ÷ (40,000kW × 8,760시간)`;
+  const MAX=60, full=Math.floor(Math.min(r.dc,MAX)), part=r.dc<MAX?r.dc-full:0;
+  let dots="";
+  for(let i=0;i<full;i++)dots+=`<i style="background:var(--gj)"></i>`;
+  if(part>0.005)dots+=`<i style="background:linear-gradient(90deg,var(--gj) ${part*100}%,#e3e9f7 ${part*100}%)"></i>`;
+  if(r.dc>MAX)dots+=`<em>외 ${convNum(r.dc-MAX,1)}곳분</em>`;
+  convEl("convDots").innerHTML=dots||`<em>0곳분</em>`;
+  convEl("convCfR").value=Math.min(r.cf,40);
+  document.querySelectorAll("#convCfBtns button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.cf===r.cf)));
+  document.querySelectorAll("#convStd button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.std===CONV.std)));
+  convEl("convCopy").textContent="환산 결과를 글로 복사";
+}
+function convPick(name){
+  convEl("convRegion").value=name;
+  convEl("convMw").value=name==="__all"?convTotal.toFixed(1):A[name].mw;
+  convDraw();
+}
+convEl("convRegion").onchange=e=>{if(e.target.value!=="__direct")convPick(e.target.value);else convEl("convMw").focus()};
+convEl("convMw").oninput=()=>{convEl("convRegion").value="__direct";convDraw()};
+convEl("convCf").oninput=convDraw;
+convEl("convCfR").oninput=e=>{convEl("convCf").value=e.target.value;convDraw()};
+document.querySelectorAll("#convCfBtns button").forEach(b=>b.onclick=()=>{convEl("convCf").value=b.dataset.cf;convDraw()});
+document.querySelectorAll("#convStd button").forEach(b=>b.onclick=()=>{CONV.std=b.dataset.std;convDraw()});
+convEl("convReset").onclick=()=>{CONV.std="gen";convEl("convCf").value=CONV.cf;convPick("__all")};
+convEl("convCopy").onclick=async()=>{
+  const r=convResult(), sel=convEl("convRegion"), name=sel.value==="__direct"?"직접 입력":sel.value==="__all"?"통합시 전체":sel.value;
+  const t=`[환산기: ${name}]
+- 설비용량 ${convNum(r.mw,1)}MW · 이용률 ${r.cf}% · ${r.stdName}
+- 1년 발전량 ${convNum(r.kwh)}kWh (${convBig(r.kwh,"kWh")})
+- 석유환산톤 ${convNum(r.toe)}toe (${convBig(r.toe,"toe")})
+- 40MW 데이터센터 ${convPlaces(r.dc)}곳분
+- 가정: 환산 계수는 에너지법 시행규칙의 에너지열량 환산기준(2022-11-21) · 데이터센터는 1년 내내 40MW를 쓴다고 봄 · 태양광은 낮에만 나고 데이터센터는 밤낮 돌기 때문에 1년 총량만 맞춘 숫자
+- 한계: 3MW 이하 허가분 합계 · 3MW 넘는 대형 발전소와 해상풍력은 빠져 있음`;
+  const btn=convEl("convCopy");
+  try{await navigator.clipboard.writeText(t)}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove()}
+  btn.textContent="✅ 복사했습니다";
+};
+convEl("convCf").value=CONV.cf;convPick("__all");
 drawMap();drawPolicy();drawBiz();
 </script>
 </body>
