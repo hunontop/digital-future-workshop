@@ -87,6 +87,8 @@
   .pick label:has(input:checked){border-color:var(--accent);background:var(--bg)}
   .pick span{color:var(--muted);font-size:.8rem}
   .note[hidden]{display:none}
+  .opt{display:flex;gap:8px;align-items:baseline;margin-top:8px;font-size:.86rem;cursor:pointer}
+  .opt span{color:var(--muted);font-size:.8rem}
   .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
   button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:9px 14px;
          border-radius:8px;font-size:.85rem;cursor:pointer;font-family:inherit}
@@ -286,6 +288,7 @@
   <section class="panel">
     <h2>1 · 꼴 고르기</h2>
     <div class="pick" role="radiogroup" aria-label="꼴"><label><input type="radio" name="style" value="basic"><b>기본</b><span>가운데 제목 · □ ○ - ㆍ 항목 · 하늘색 머리줄 표</span></label><label><input type="radio" name="style" value="plan"><b>업무계획</b><span>광주 「6월중 주요 업무계획」 모양 · [1] 부서 줄 · 하늘색 꼬리표</span></label><label><input type="radio" name="style" value="report"><b>분석 보고서</b><span>행정 분석 보고서 모양 · □ 칸 · 표 제목 · 단위 줄</span></label></div>
+    <label class="opt"><input type="checkbox" id="keepword" checked> 어절 단위로 줄 바꾸기 <span>줄 끝에서 낱말을 자르지 않습니다. 끄면 글자 단위로 꽉 채웁니다</span></label>
     <h2 style="margin-top:14px">2 · AI 답변을 그대로 붙여넣기</h2>
     <textarea id="src" placeholder="AI가 준 답변을 여기에 붙여넣으세요 (Ctrl+V)"></textarea>
     <div class="btns">
@@ -331,6 +334,21 @@ function tidy(md){
 var MARKS = {basic:['□', '○', '-', 'ㆍ'], plan:['○', '-', '‧', '‧'], report:['○', '-', '‧', '‧']};
 var FILE = {basic:'AI답변.hwpx', plan:'AI답변_업무계획.hwpx', report:'AI답변_분석보고서.hwpx'};
 var STYLE_NOW = 'basic';
+// 분석 보고서 꼴: ### 소제목 → 「○ 소제목」 항목 · 그 아래 글머리 항목은 한 단계 내린다(다음 # · ## 제목까지 · 11-08)
+function subToItem(blocks){
+  var sub = false, M = MARKS.report;
+  return blocks.map(function(b){
+    if(b.t === 'h'){ if(b.level <= 2){ sub = false; return b; } sub = true; return {t:'item', depth:0, mark:M[0], text:b.text}; }
+    if(b.t === 'item' && sub){ var d = b.depth + 1; return {t:'item', depth:d, mark:(M.indexOf(b.mark) >= 0 ? M[Math.min(d, 3)] : b.mark), text:b.text}; }
+    return b;
+  });
+}
+// 어절 단위 줄 바꿈(11-08 사용자: 켜고 끄기) — 켜면 한글 낱말을 줄 끝에서 자르지 않는다(한글 「한글 단위: 어절」) · 끄면 글자 단위
+// ⚠ OWPML 이름이 뜻과 반대다: breakNonLatinWord="BREAK_WORD" = 어절 단위 · "KEEP_WORD" = 글자 단위(11-08 한글 2020에서 PDF로 확인)
+var KEEP_WORD = true;
+function headerNow(){
+  return HEADERS[STYLE_NOW].replace(/breakNonLatinWord="[A-Z_]+"/g, 'breakNonLatinWord="' + (KEEP_WORD ? 'BREAK_WORD' : 'KEEP_WORD') + '"');
+}
 
 // ===== 마크다운 파서 =========================================================
 function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -722,7 +740,7 @@ function itemXml(b){
 function buildSection(md){
   _id = 1000000100;
   // 빈 줄은 마크다운마다 들쭉날쭉해서 쓰지 않는다 — □ 칸 앞에만 한 줄 띄운다
-  var blocks = parse(md).filter(function(b){ return b.t !== 'blank'; }), body = [];
+  var blocks = subToItem(parse(md)).filter(function(b){ return b.t !== 'blank'; }), body = [];
   function gap(n){ if(body.length) for(var k = 0; k < n; k++) body.push(para('', P.body, C.text)); }
   blocks.forEach(function(b){
     if(b.t === 'h'){
@@ -801,7 +819,7 @@ function makeHwpx(md){
   var enc = new TextEncoder();
   var files = [{name:'mimetype', data:enc.encode(HWPX.text['mimetype'])}];   // 반드시 첫 엔트리
   Object.keys(HWPX.text).forEach(function(k){
-    if(k !== 'mimetype') files.push({name:k, data:enc.encode(k === 'Contents/header.xml' ? HEADERS[STYLE_NOW] : HWPX.text[k])});
+    if(k !== 'mimetype') files.push({name:k, data:enc.encode(k === 'Contents/header.xml' ? headerNow() : HWPX.text[k])});
   });
   Object.keys(HWPX.bin).forEach(function(k){
     files.push({name:k, data:b64ToU8(HWPX.bin[k])});
@@ -865,7 +883,7 @@ window.md2hwpx = { parse: parse, buildSection: buildSection, makeHwpx: makeHwpx,
     });
     return h.join('');
   },
-    report: function(blocks){
+    report: function(blocks){ blocks = subToItem(blocks);
     var h = [];
     var UNIT = /^\s*\(\s*단위\s*[:：]/, CAP = /^\s*<\s*[^<>]+\s*>\s*$/,
         NUM = /^[\s+\-−–△▲▼]*[\d,]+(\.\d+)?\s*(%|%p)?\s*$/, TOT = /^(합계|계|총계|소계|전국)$/;
@@ -898,6 +916,7 @@ window.md2hwpx = { parse: parse, buildSection: buildSection, makeHwpx: makeHwpx,
   };
   function render(){
     out.className = 's-' + STYLE_NOW;
+    out.style.wordBreak = KEEP_WORD ? 'keep-all' : 'normal';
     out.innerHTML = RENDER[STYLE_NOW](window.md2hwpx.parse(src.value)) || '<p style="color:#888">왼쪽에 붙여넣으면 여기에 나타납니다.</p>';
   }
   // 처음 꼴: ?style= → 파일 이름(옛 v2 · v3 주소) → 기본
@@ -914,6 +933,8 @@ window.md2hwpx = { parse: parse, buildSection: buildSection, makeHwpx: makeHwpx,
     document.querySelectorAll('.note[data-style]').forEach(function(n){ n.hidden = n.getAttribute('data-style') !== STYLE_NOW; });
     render();
   }
+  var kw = document.getElementById('keepword');
+  kw.addEventListener('change', function(){ KEEP_WORD = kw.checked; render(); });
   document.querySelectorAll('.pick input').forEach(function(r){
     r.addEventListener('change', function(){ if(r.checked) pickStyle(r.value); });
   });
